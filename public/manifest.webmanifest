@@ -1,0 +1,19 @@
+{
+  "name": "sdfdrop",
+  "short_name": "sdfdrop",
+  "description": "sdfdrop — drop files to nearby devices. Same WiFi + internet relay.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b1020",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234f46e5'/%3E%3Cpath fill='%2300c896' d='M32 8C32 8 16 28 16 39a16 16 0 0 0 32 0C48 28 32 8 32 8z'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
