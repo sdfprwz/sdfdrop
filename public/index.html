@@ -7,194 +7,182 @@
 <meta name="description" content="sdfdrop — free browser-to-browser file sharing. Same-WiFi auto-discovery, room codes with relay fallback, and 1-to-room classroom broadcast. No signup, files never stored." />
 <link rel="canonical" href="https://sdfdrop.onrender.com/" />
 <meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#2563eb" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="sdfdrop" />
-<meta property="og:title" content="sdfdrop — drop files to nearby devices" />
+<meta property="og:title" content="sdfdrop — Share Files Directly." />
 <meta property="og:description" content="Free P2P file sharing in your browser: same WiFi auto-discovery, internet rooms, classroom broadcast. No signup." />
 <meta property="og:url" content="https://sdfdrop.onrender.com/" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="sdfdrop — drop files to nearby devices" />
+<meta name="twitter:title" content="sdfdrop — Share Files Directly." />
 <meta name="twitter:description" content="Free browser P2P file sharing: same WiFi, rooms, classroom broadcast. No signup." />
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebApplication","name":"sdfdrop","url":"https://sdfdrop.onrender.com/","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript and WebRTC","offers":{"@type":"Offer","price":"0"},"description":"Free browser-to-browser file sharing with same-WiFi auto-discovery, room codes and classroom broadcast."}
 </script>
-<meta name="theme-color" content="#4f46e5" />
-<link rel="manifest" href="manifest.webmanifest" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%234f46e5'/%3E%3Cstop offset='1' stop-color='%2300c896'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath fill='url(%23g)' d='M32 3C32 3 12 28 12 41a20 20 0 0 0 40 0C52 28 32 3 32 3z'/%3E%3Cpath fill='white' opacity='.9' d='M27 41a5 5 0 0 0 5 5c3.5 0 6-2.5 7-5l3-2-3 1c-.5-2-1.5-4-3-5.5L27 41z'/%3E%3C/svg%3E" />
-<link rel="stylesheet" href="styles.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%232563eb' d='M4 32 60 6 36 60l-8-20z'/%3E%3Cpath fill='%2393c5fd' d='M28 40 60 6 36 60z' opacity='.55'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="landing.css" />
 </head>
 <body>
 <h1 class="sr-only" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">sdfdrop — free online file sharing: send files over the same WiFi, internet rooms, and one-to-many classroom broadcast, right in the browser</h1>
-<div class="bg-orbs" aria-hidden="true"><span></span><span></span><span></span></div>
 
-<header class="topbar">
-  <div class="brand">
-    <span class="logo" aria-hidden="true">
-      <svg viewBox="0 0 64 64" width="30" height="30"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#00c896"/></linearGradient></defs><path fill="url(#lg)" d="M32 3C32 3 12 28 12 41a20 20 0 0 0 40 0C52 28 32 3 32 3z"/><path fill="#fff" opacity=".92" d="M22 42.5c0-4 3-7 6.5-8.5L40 28l-4.5 8.5c2 .8 3.5 2.6 3.5 5a6.5 6.5 0 0 1-13 0z" transform="rotate(-12 32 40)"/></svg>
-    </span>
-    <span class="brand-text"><strong>sdfdrop</strong><small>drop it. share it.</small></span>
-  </div>
-  <div class="top-actions">
-    <span id="statusPill" class="pill offline"><span class="dot"></span><span id="statusText">connecting…</span></span>
-    <button id="btnRoom" class="btn ghost" title="Join / create internet room">🔗 <span class="hide-sm">Room</span></button>
-    <button id="btnQr" class="btn ghost" title="Show QR to connect">📷 <span class="hide-sm">QR</span></button>
-    <button id="btnHelp" class="btn ghost" title="How to connect / troubleshoot">❓</button>
-    <button id="btnText" class="btn ghost" title="Send text">✉️</button>
-    <button id="btnTheme" class="btn ghost" title="Toggle theme">🌙</button>
+<header class="nav" id="topnav">
+  <a class="brand" href="#top" aria-label="sdfdrop home">
+    <svg viewBox="0 0 64 64" width="34" height="34" aria-hidden="true"><defs><linearGradient id="pl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient></defs><path fill="url(#pl)" d="M4 32 60 6 36 60l-8-20z"/><path fill="#bfdbfe" d="M28 40 60 6 36 60z" opacity=".55"/></svg>
+    <span class="brand-text"><strong>SdfDrop</strong><small>Share • Connect • Explore</small></span>
+  </a>
+  <nav class="links" id="navlinks" aria-label="Sections">
+    <a href="#how">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#opensource">Open Source</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+  <div class="nav-cta">
+    <a class="btn primary sm" href="app.html">Open SdfDrop <span aria-hidden="true">↗</span></a>
+    <button class="menu-btn" id="menubtn" aria-label="Open menu" aria-expanded="false" aria-controls="navlinks">☰</button>
   </div>
 </header>
 
-<div id="roomBanner" class="room-banner hidden">
-  <span>🌐 Internet room: <strong id="roomCodeLabel"></strong></span>
-  <span class="room-sub" id="roomHint">devices with this code can see you</span>
-  <span class="room-sub" id="roomCount"></span>
-  <button id="btnSendRoom" class="btn small primary">📢 Send to room</button>
-  <button id="btnCopyRoom" class="btn small">Copy link</button>
-  <button id="btnLeaveRoom" class="btn small danger-ghost">Leave</button>
-</div>
-
-<main class="layout">
-  <section class="radar-card">
-    <div class="radar-head">
-      <div class="me">
-        <div id="meAvatar" class="avatar me-avatar">🦊</div>
-        <div class="me-info">
-          <div class="me-name-row">
-            <strong id="meName">Loading…</strong>
-            <button id="btnEditName" class="icon-btn" title="Edit display name">✏️</button>
-          </div>
-          <small id="meSub">discoverable on this WiFi • E2E encrypted 🔒</small>
-        </div>
+<main id="top">
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">FAST&nbsp;&nbsp;•&nbsp;&nbsp;PRIVATE&nbsp;&nbsp;•&nbsp;&nbsp;NO LIMITS</p>
+      <h2 class="headline">Share Files<br /><span>Directly.</span></h2>
+      <p class="lede">SdfDrop lets you share files directly between devices using secure peer-to-peer technology.<br />No sign-up. No storage. Just you and your files.</p>
+      <div class="cta-row">
+        <a class="btn primary" href="app.html"><span aria-hidden="true">➤</span> Start Sharing Now <span aria-hidden="true">→</span></a>
+        <a class="btn ghost" href="https://github.com/sdfprwz/sdfdrop" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+          View on GitHub
+        </a>
       </div>
-      <div class="radar-legend"><span id="peerCount">0 nearby</span></div>
+      <ul class="minis">
+        <li><span class="chip">⚡</span><div><strong>Lightning Fast</strong><small>Peer-to-peer transfer</small></div></li>
+        <li><span class="chip">🛡️</span><div><strong>Private</strong><small>Your files, your control</small></div></li>
+        <li><span class="chip">👥</span><div><strong>No Account</strong><small>Join a room and share</small></div></li>
+        <li><span class="chip">∞</span><div><strong>Any File Type</strong><small>From documents to videos</small></div></li>
+      </ul>
     </div>
-
-    <div id="radar" class="radar" aria-live="polite">
-      <div class="radar-rings" aria-hidden="true"><span></span><span></span><span></span></div>
-      <div id="peersLayer" class="peers-layer"></div>
-      <div class="self-node">
-        <div id="selfNodeAvatar" class="avatar big">🦊</div>
-        <small>you</small>
-      </div>
-      <div id="emptyState" class="empty-pill">
-        <span class="pulse-dot" aria-hidden="true"></span>
-        <span id="emptyText">Searching for nearby devices…</span>
-        <button class="link" id="btnRoom2">Connect 🔗</button>
-      </div>
+    <div class="hero-art" role="img" aria-label="Files flying directly from one laptop to another over a mountain lake">
+      <p class="scribble top">Files travel better<br />together.</p>
+      <svg viewBox="0 0 640 520" width="100%" aria-hidden="true">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dbeafe"/><stop offset=".62" stop-color="#f3e8ff"/><stop offset="1" stop-color="#fef3c7"/></linearGradient>
+          <linearGradient id="lake" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfdbfe"/><stop offset="1" stop-color="#e0f2fe"/></linearGradient>
+          <linearGradient id="mtn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a5b4fc"/><stop offset="1" stop-color="#6366f1"/></linearGradient>
+          <linearGradient id="mtn2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c7d2fe"/><stop offset="1" stop-color="#818cf8"/></linearGradient>
+          <linearGradient id="scr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1e293b"/><stop offset="1" stop-color="#0f172a"/></linearGradient>
+          <linearGradient id="arc" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#60a5fa"/><stop offset="1" stop-color="#a78bfa"/></linearGradient>
+        </defs>
+        <rect x="0" y="0" width="640" height="520" rx="28" fill="url(#sky)"/>
+        <circle cx="470" cy="300" r="26" fill="#fde68a" opacity=".9"/>
+        <path d="M40 250 170 90l60 70 90-110 120 150 70-60 90 110z" fill="url(#mtn)" opacity=".85"/>
+        <path d="M260 60l18 26-12 8 16 14-30 10z M430 120l12 18-8 6 10 10-20 8z" fill="#fff" opacity=".85"/>
+        <path d="M0 280 120 170l80 80 110-120 130 150 90-80 110 90v230H0z" fill="url(#mtn2)" opacity=".7"/>
+        <ellipse cx="320" cy="420" rx="320" ry="100" fill="url(#lake)"/>
+        <ellipse cx="320" cy="408" rx="300" ry="14" fill="#fff" opacity=".5"/>
+        <path d="M0 420 Q80 400 150 425 T320 422 T480 425 T640 418 V520 H0z" fill="#bae6fd" opacity=".55"/>
+        <g fill="#1e3a5f" opacity=".9">
+          <path d="M52 420l22-70 22 70zM60 400l14-44 14 44z" opacity=".85"/>
+          <path d="M96 430l18-56 18 56z"/>
+          <path d="M560 415l24-76 24 76zM570 392l14-46 14 46z" opacity=".85"/>
+          <path d="M606 428l18-58 18 58z"/>
+        </g>
+        <g>
+          <path d="M120 470l60-38 60 38z" fill="#334155"/>
+          <path d="M470 470l65-40 65 40z" fill="#1e293b"/>
+        </g>
+        <g font-family="monospace" font-size="15" text-anchor="middle">
+          <g transform="translate(150,250)">
+            <rect x="-72" y="-58" width="144" height="96" rx="8" fill="url(#scr)"/>
+            <rect x="-72" y="38" width="144" height="10" rx="5" fill="#475569"/>
+            <rect x="-62" y="-48" width="124" height="76" rx="4" fill="#0b1226"/>
+            <text x="0" y="-18" font-size="26">📄</text>
+            <text x="0" y="2" font-size="10" fill="#e2e8f0">Sending…</text>
+            <rect x="-52" y="10" width="104" height="8" rx="4" fill="#334155"/>
+            <rect x="-52" y="10" width="76" height="8" rx="4" fill="#38bdf8"/>
+            <text x="0" y="32" font-size="10" fill="#94a3b8">73%</text>
+          </g>
+          <g transform="translate(492,262)">
+            <rect x="-78" y="-62" width="156" height="102" rx="8" fill="#e2e8f0"/>
+            <rect x="-78" y="40" width="156" height="10" rx="5" fill="#94a3b8"/>
+            <rect x="-68" y="-52" width="136" height="82" rx="4" fill="#f8fafc"/>
+            <text x="0" y="-20" font-size="26">📥</text>
+            <text x="0" y="0" font-size="10" fill="#475569">Receiving…</text>
+            <rect x="-56" y="8" width="112" height="8" rx="4" fill="#cbd5e1"/>
+            <rect x="-56" y="8" width="82" height="8" rx="4" fill="#6366f1"/>
+            <text x="0" y="30" font-size="10" fill="#64748b">73%</text>
+          </g>
+        </g>
+        <g fill="none" stroke="url(#arc)" stroke-width="2.5" opacity=".8">
+          <path d="M225 235 Q330 130 415 235"/>
+          <path d="M235 250 Q335 160 425 250" opacity=".55"/>
+          <path d="M245 265 Q335 190 415 262" opacity=".35"/>
+        </g>
+        <g font-size="22" text-anchor="middle">
+          <g transform="translate(300,168) rotate(-8)"><rect x="-22" y="-26" width="44" height="52" rx="8" fill="#3b82f6"/><text x="0" y="6">≡</text></g>
+          <g transform="translate(362,140) rotate(6)"><rect x="-22" y="-26" width="44" height="52" rx="8" fill="#ef4444"/><text x="0" y="4" font-size="13" fill="#fff">PDF</text></g>
+          <g transform="translate(428,148) rotate(-5)"><rect x="-22" y="-26" width="44" height="52" rx="8" fill="#22c55e"/><text x="0" y="6" font-size="16">▦</text></g>
+          <g transform="translate(335,205) rotate(8)"><rect x="-20" y="-24" width="40" height="48" rx="8" fill="#8b5cf6"/><text x="0" y="6" font-size="18">🖼</text></g>
+          <g transform="translate(478,180) rotate(7)"><rect x="-20" y="-24" width="40" height="48" rx="8" fill="#fbbf24"/><text x="0" y="6" font-size="18">📁</text></g>
+          <g transform="translate(524,205) rotate(-6)"><rect x="-20" y="-24" width="40" height="48" rx="8" fill="#94a3b8"/><text x="0" y="6" font-size="18">▶</text></g>
+        </g>
+        <ellipse cx="320" cy="500" rx="300" ry="22" fill="#fff" opacity=".65"/>
+      </svg>
+      <p class="scribble bottom">A more connected<br />tomorrow.</p>
     </div>
-
-    <div class="drop-hint">
-      <span>💡 Tap a device to send files • or drag &amp; drop files anywhere</span>
-    </div>
-
-    <div class="send-bar">
-      <button id="btnSendFiles" class="btn primary">📁 Send files</button>
-      <button id="btnSendText2" class="btn">✉️ Send text</button>
-      <label class="broadcast"><input type="checkbox" id="chkBroadcast" /> send to all nearby</label>
-    </div>
-    <input type="file" id="fileInput" multiple hidden />
   </section>
 
-  <aside class="side">
-    <section class="card">
-      <h3>📦 Transfers</h3>
-      <div id="transfers" class="transfers"><p class="muted">Nothing yet. Files you send &amp; receive show up here with speed + progress.</p></div>
-    </section>
-    <section class="card how">
-      <h3>How it works</h3>
-      <ul>
-        <li><strong>Same WiFi:</strong> auto-discovery. Nothing to type.</li>
-        <li><strong>Different network:</strong> Room code or QR → relay + WebRTC.</li>
-        <li><strong>Private:</strong> P2P first, TURN/relay fallback. Files never stored.</li>
-      </ul>
-      <p class="muted small">Best of Snapdrop (simple) + PairDrop (rooms) + AirDrop (feel), under <strong>sdfdrop</strong> branding.</p>
-    </section>
-  </aside>
+  <section class="cards" id="features">
+    <article class="card">
+      <span class="tile">🔒</span>
+      <div><h3>End-to-End Direct</h3><p>Your files go directly from your device to theirs. We don't store anything.</p></div>
+    </article>
+    <article class="card">
+      <span class="tile">👥</span>
+      <div><h3>Simple &amp; Instant</h3><p>Create or join a room. Share a code. Start transferring.</p></div>
+    </article>
+    <article class="card">
+      <span class="tile">🍃</span>
+      <div><h3>Open Source</h3><p>Transparent, community-driven, and built for a more open web.</p></div>
+    </article>
+  </section>
+
+  <section class="split" id="how">
+    <h2>How it works</h2>
+    <ol class="steps">
+      <li><span class="n">1</span><div><strong>Open SdfDrop on both devices</strong><p>Same WiFi? They find each other automatically — nothing to type.</p></div></li>
+      <li><span class="n">2</span><div><strong>Or join the same room</strong><p>Different networks? Enter one code (or scan the QR) on both sides.</p></div></li>
+      <li><span class="n">3</span><div><strong>Tap a device and send</strong><p>Files fly peer-to-peer with live progress. Teachers can broadcast to a whole room at once.</p></div></li>
+    </ol>
+    <div class="cta-row center"><a class="btn primary" href="app.html">Try it now <span aria-hidden="true">→</span></a></div>
+  </section>
+
+  <section class="split" id="opensource">
+    <h2>Open Source</h2>
+    <p class="center muted">MIT licensed. Read the signaling code, run your own server,<br />or contribute on GitHub.</p>
+    <div class="cta-row center">
+      <a class="btn ghost" href="https://github.com/sdfprwz/sdfdrop" target="_blank" rel="noopener">View on GitHub</a>
+      <a class="btn primary" href="app.html">Open SdfDrop <span aria-hidden="true">↗</span></a>
+    </div>
+  </section>
+
+  <section class="split" id="faq">
+    <h2>FAQ</h2>
+    <div class="faq">
+      <details><summary>Is it really free? Any limits?</summary><p>Yes — free, no accounts. Peer-to-peer has no real size cap; server-relayed transfers cap at 100MB per file.</p></details>
+      <details><summary>Do my files get uploaded anywhere?</summary><p>No. Files travel directly between browsers (DTLS encrypted). The server only exchanges connection handshakes and, if P2P fails, relays encrypted-in-transit chunks without storing them.</p></details>
+      <details><summary>Same WiFi but devices don't see each other?</summary><p>Use the same WiFi name (2.4 vs 5 GHz can isolate), turn VPNs off — or just join the same room code, which always works.</p></details>
+      <details><summary>Does it work on phones?</summary><p>Yes — it's a responsive web app that installs like a native app (Add to Home Screen). Keep the tab in the foreground during big transfers.</p></details>
+      <details><summary>What is room broadcast?</summary><p>A teacher creates a room, students join it, and one upload fans out to everyone in the room — built for classrooms sharing notes.</p></details>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p>✈&nbsp; SdfDrop • Share what matters.</p>
+    <p class="muted small"><a href="app.html">Open app</a> • <a href="https://github.com/sdfprwz/sdfdrop" target="_blank" rel="noopener">GitHub</a> • MIT • <span id="year">2026</span></p>
+  </footer>
 </main>
 
-<footer class="foot">
-  <span id="connInfo">sdfdrop • WebRTC P2P • WS relay fallback • v1.0</span>
-  <span class="foot-right"><span id="netBadge" class="pill tiny">P2P ready</span></span>
-</footer>
-
-<!-- Help / troubleshoot modal (replaces forced radar text) -->
-<div id="helpModal" class="modal hidden" role="dialog" aria-modal="true">
-  <div class="modal-card">
-    <h3>❓ Connect devices</h3>
-    <ol class="help-list">
-      <li><strong>Same WiFi (auto):</strong> open this page on both devices. No code needed.</li>
-      <li><strong>Different network:</strong> tap 🔗 Room, enter the same code on both, or scan the QR.</li>
-      <li><strong>Tap a device</strong> on the radar to send files or text.</li>
-    </ol>
-    <p class="muted small">Not seeing each other? Check: same WiFi name (2.4 vs 5 GHz matters on some routers), VPN off, no “client isolation” on hotel WiFi. Then use a Room code — it works everywhere.</p>
-    <p class="diag small"><span class="muted">Diagnostics:</span> <code id="diagInfo">…</code></p>
-    <div class="modal-actions">
-      <button id="btnHelpRoom" class="btn primary">Join room 🔗</button>
-      <button id="btnCloseHelp" class="btn ghost">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- Receive modal -->
-<div id="recvModal" class="modal hidden" role="dialog" aria-modal="true">
-  <div class="modal-card">
-    <h3 id="recvTitle">📥 Incoming file</h3>
-    <p id="recvMeta" class="muted"></p>
-    <div id="recvList" class="recv-list"></div>
-    <div class="modal-actions">
-      <button id="btnDecline" class="btn danger-ghost">Decline</button>
-      <button id="btnAccept" class="btn primary">Accept ✓</button>
-    </div>
-  </div>
-</div>
-
-<!-- Room modal -->
-<div id="roomModal" class="modal hidden" role="dialog" aria-modal="true">
-  <div class="modal-card">
-    <h3>🔗 Internet room</h3>
-    <p class="muted">Enter the same 4–12 letter code on both devices. Works across mobile data, hotspots, VPNs.</p>
-    <div class="row">
-      <input id="roomInput" maxlength="12" placeholder="e.g. BEACH42" autocomplete="off" spellcheck="false" />
-      <button id="btnJoinRoom" class="btn primary">Join</button>
-    </div>
-    <div class="row">
-      <button id="btnRandomRoom" class="btn">🎲 Random code</button>
-      <button id="btnCloseRoom" class="btn ghost">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- QR connect modal -->
-<div id="qrModal" class="modal hidden" role="dialog" aria-modal="true">
-  <div class="modal-card center">
-    <h3>📷 Scan to connect</h3>
-    <p class="muted">Point the other device's camera at this — it joins your room instantly. Or share the link below.</p>
-    <canvas id="qrCanvas" width="220" height="220"></canvas>
-    <p><code id="qrLink"></code></p>
-    <div class="row center">
-      <button id="btnCopyQr" class="btn">Copy link</button>
-      <button id="btnCloseQr" class="btn ghost">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- Text modal -->
-<div id="textModal" class="modal hidden" role="dialog" aria-modal="true">
-  <div class="modal-card">
-    <h3>✉️ Send text</h3>
-    <p class="muted" id="textTargetLabel"></p>
-    <textarea id="textInput" rows="4" placeholder="Type message or paste a link…"></textarea>
-    <div class="modal-actions">
-      <button id="btnCloseText" class="btn ghost">Cancel</button>
-      <button id="btnDoSendRoomText" class="btn" title="Announce to everyone in the room">📢 Room</button>
-      <button id="btnDoSendText" class="btn primary">Send ✓</button>
-    </div>
-  </div>
-</div>
-
-<div id="toasts" class="toasts" aria-live="polite"></div>
-
-<script src="vendor/qrcode.min.js" defer></script>
-<script src="app.js"></script>
+<script src="landing.js"></script>
 </body>
 </html>

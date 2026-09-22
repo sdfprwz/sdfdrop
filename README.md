@@ -92,11 +92,13 @@ sdfdrop/
 ├── render.yaml          # Render blueprint (health check, env placeholders)
 ├── package.json
 └── public/
-    ├── index.html       # sdfdrop UI (radar, rooms, transfers, modals)
+    ├── index.html       # landing page (/, forwards ?room= links to the app)
+    ├── landing.css / landing.js
+    ├── app.html         # sdfdrop app (radar, rooms, transfers, modals)
     ├── app.js           # WebRTC + relay + broadcast client
-    ├── styles.css       # responsive phone → desktop styles
-    ├── manifest.webmanifest
-    └── sw.js            # PWA shell (v2, network-first pages)
+    ├── styles.css       # app responsive phone → desktop styles
+    ├── manifest.webmanifest  # PWA (starts at app.html)
+    └── sw.js            # PWA shell (v4, network-first pages)
 ```
 
 MIT — built for sdfdrop.

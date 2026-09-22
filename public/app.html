@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>sdfdrop app — drop files to nearby devices</title>
+<meta name="description" content="sdfdrop app — share files between your devices over the same WiFi or internet rooms. No signup." />
+<link rel="canonical" href="https://sdfdrop.onrender.com/" />
+<meta name="robots" content="index, follow" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="sdfdrop" />
+<meta property="og:title" content="sdfdrop — drop files to nearby devices" />
+<meta property="og:description" content="Free P2P file sharing in your browser: same WiFi auto-discovery, internet rooms, classroom broadcast. No signup." />
+<meta property="og:url" content="https://sdfdrop.onrender.com/" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="sdfdrop — drop files to nearby devices" />
+<meta name="twitter:description" content="Free browser P2P file sharing: same WiFi, rooms, classroom broadcast. No signup." />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"sdfdrop","url":"https://sdfdrop.onrender.com/","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript and WebRTC","offers":{"@type":"Offer","price":"0"},"description":"Free browser-to-browser file sharing with same-WiFi auto-discovery, room codes and classroom broadcast."}
+</script>
+<meta name="theme-color" content="#4f46e5" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%234f46e5'/%3E%3Cstop offset='1' stop-color='%2300c896'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath fill='url(%23g)' d='M32 3C32 3 12 28 12 41a20 20 0 0 0 40 0C52 28 32 3 32 3z'/%3E%3Cpath fill='white' opacity='.9' d='M27 41a5 5 0 0 0 5 5c3.5 0 6-2.5 7-5l3-2-3 1c-.5-2-1.5-4-3-5.5L27 41z'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<h1 class="sr-only" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">sdfdrop — free online file sharing: send files over the same WiFi, internet rooms, and one-to-many classroom broadcast, right in the browser</h1>
+<div class="bg-orbs" aria-hidden="true"><span></span><span></span><span></span></div>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="logo" aria-hidden="true">
+      <svg viewBox="0 0 64 64" width="30" height="30"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#00c896"/></linearGradient></defs><path fill="url(#lg)" d="M32 3C32 3 12 28 12 41a20 20 0 0 0 40 0C52 28 32 3 32 3z"/><path fill="#fff" opacity=".92" d="M22 42.5c0-4 3-7 6.5-8.5L40 28l-4.5 8.5c2 .8 3.5 2.6 3.5 5a6.5 6.5 0 0 1-13 0z" transform="rotate(-12 32 40)"/></svg>
+    </span>
+    <span class="brand-text"><strong>sdfdrop</strong><small>drop it. share it.</small></span>
+  </div>
+  <div class="top-actions">
+    <span id="statusPill" class="pill offline"><span class="dot"></span><span id="statusText">connecting…</span></span>
+    <button id="btnRoom" class="btn ghost" title="Join / create internet room">🔗 <span class="hide-sm">Room</span></button>
+    <button id="btnQr" class="btn ghost" title="Show QR to connect">📷 <span class="hide-sm">QR</span></button>
+    <button id="btnHelp" class="btn ghost" title="How to connect / troubleshoot">❓</button>
+    <button id="btnText" class="btn ghost" title="Send text">✉️</button>
+    <button id="btnTheme" class="btn ghost" title="Toggle theme">🌙</button>
+  </div>
+</header>
+
+<div id="roomBanner" class="room-banner hidden">
+  <span>🌐 Internet room: <strong id="roomCodeLabel"></strong></span>
+  <span class="room-sub" id="roomHint">devices with this code can see you</span>
+  <span class="room-sub" id="roomCount"></span>
+  <button id="btnSendRoom" class="btn small primary">📢 Send to room</button>
+  <button id="btnCopyRoom" class="btn small">Copy link</button>
+  <button id="btnLeaveRoom" class="btn small danger-ghost">Leave</button>
+</div>
+
+<main class="layout">
+  <section class="radar-card">
+    <div class="radar-head">
+      <div class="me">
+        <div id="meAvatar" class="avatar me-avatar">🦊</div>
+        <div class="me-info">
+          <div class="me-name-row">
+            <strong id="meName">Loading…</strong>
+            <button id="btnEditName" class="icon-btn" title="Edit display name">✏️</button>
+          </div>
+          <small id="meSub">discoverable on this WiFi • E2E encrypted 🔒</small>
+        </div>
+      </div>
+      <div class="radar-legend"><span id="peerCount">0 nearby</span></div>
+    </div>
+
+    <div id="radar" class="radar" aria-live="polite">
+      <div class="radar-rings" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div id="peersLayer" class="peers-layer"></div>
+      <div class="self-node">
+        <div id="selfNodeAvatar" class="avatar big">🦊</div>
+        <small>you</small>
+      </div>
+      <div id="emptyState" class="empty-pill">
+        <span class="pulse-dot" aria-hidden="true"></span>
+        <span id="emptyText">Searching for nearby devices…</span>
+        <button class="link" id="btnRoom2">Connect 🔗</button>
+      </div>
+    </div>
+
+    <div class="drop-hint">
+      <span>💡 Tap a device to send files • or drag &amp; drop files anywhere</span>
+    </div>
+
+    <div class="send-bar">
+      <button id="btnSendFiles" class="btn primary">📁 Send files</button>
+      <button id="btnSendText2" class="btn">✉️ Send text</button>
+      <label class="broadcast"><input type="checkbox" id="chkBroadcast" /> send to all nearby</label>
+    </div>
+    <input type="file" id="fileInput" multiple hidden />
+  </section>
+
+  <aside class="side">
+    <section class="card">
+      <h3>📦 Transfers</h3>
+      <div id="transfers" class="transfers"><p class="muted">Nothing yet. Files you send &amp; receive show up here with speed + progress.</p></div>
+    </section>
+    <section class="card how">
+      <h3>How it works</h3>
+      <ul>
+        <li><strong>Same WiFi:</strong> auto-discovery. Nothing to type.</li>
+        <li><strong>Different network:</strong> Room code or QR → relay + WebRTC.</li>
+        <li><strong>Private:</strong> P2P first, TURN/relay fallback. Files never stored.</li>
+      </ul>
+      <p class="muted small">Best of Snapdrop (simple) + PairDrop (rooms) + AirDrop (feel), under <strong>sdfdrop</strong> branding.</p>
+    </section>
+  </aside>
+</main>
+
+<footer class="foot">
+  <span id="connInfo">sdfdrop • WebRTC P2P • WS relay fallback • v1.0</span>
+  <span class="foot-right"><span id="netBadge" class="pill tiny">P2P ready</span></span>
+</footer>
+
+<!-- Help / troubleshoot modal (replaces forced radar text) -->
+<div id="helpModal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <h3>❓ Connect devices</h3>
+    <ol class="help-list">
+      <li><strong>Same WiFi (auto):</strong> open this page on both devices. No code needed.</li>
+      <li><strong>Different network:</strong> tap 🔗 Room, enter the same code on both, or scan the QR.</li>
+      <li><strong>Tap a device</strong> on the radar to send files or text.</li>
+    </ol>
+    <p class="muted small">Not seeing each other? Check: same WiFi name (2.4 vs 5 GHz matters on some routers), VPN off, no “client isolation” on hotel WiFi. Then use a Room code — it works everywhere.</p>
+    <p class="diag small"><span class="muted">Diagnostics:</span> <code id="diagInfo">…</code></p>
+    <div class="modal-actions">
+      <button id="btnHelpRoom" class="btn primary">Join room 🔗</button>
+      <button id="btnCloseHelp" class="btn ghost">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Receive modal -->
+<div id="recvModal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <h3 id="recvTitle">📥 Incoming file</h3>
+    <p id="recvMeta" class="muted"></p>
+    <div id="recvList" class="recv-list"></div>
+    <div class="modal-actions">
+      <button id="btnDecline" class="btn danger-ghost">Decline</button>
+      <button id="btnAccept" class="btn primary">Accept ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- Room modal -->
+<div id="roomModal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <h3>🔗 Internet room</h3>
+    <p class="muted">Enter the same 4–12 letter code on both devices. Works across mobile data, hotspots, VPNs.</p>
+    <div class="row">
+      <input id="roomInput" maxlength="12" placeholder="e.g. BEACH42" autocomplete="off" spellcheck="false" />
+      <button id="btnJoinRoom" class="btn primary">Join</button>
+    </div>
+    <div class="row">
+      <button id="btnRandomRoom" class="btn">🎲 Random code</button>
+      <button id="btnCloseRoom" class="btn ghost">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- QR connect modal -->
+<div id="qrModal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-card center">
+    <h3>📷 Scan to connect</h3>
+    <p class="muted">Point the other device's camera at this — it joins your room instantly. Or share the link below.</p>
+    <canvas id="qrCanvas" width="220" height="220"></canvas>
+    <p><code id="qrLink"></code></p>
+    <div class="row center">
+      <button id="btnCopyQr" class="btn">Copy link</button>
+      <button id="btnCloseQr" class="btn ghost">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Text modal -->
+<div id="textModal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <h3>✉️ Send text</h3>
+    <p class="muted" id="textTargetLabel"></p>
+    <textarea id="textInput" rows="4" placeholder="Type message or paste a link…"></textarea>
+    <div class="modal-actions">
+      <button id="btnCloseText" class="btn ghost">Cancel</button>
+      <button id="btnDoSendRoomText" class="btn" title="Announce to everyone in the room">📢 Room</button>
+      <button id="btnDoSendText" class="btn primary">Send ✓</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+
+<script src="vendor/qrcode.min.js" defer></script>
+<script src="app.js"></script>
+</body>
+</html>

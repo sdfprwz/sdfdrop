@@ -2,7 +2,7 @@
   "name": "sdfdrop",
   "short_name": "sdfdrop",
   "description": "sdfdrop — drop files to nearby devices. Same WiFi + internet relay.",
-  "start_url": "./",
+  "start_url": "./app.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
