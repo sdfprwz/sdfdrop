@@ -1,6 +1,6 @@
 /* sdfdrop service worker — network-first navigations, cache-first assets */
-const CACHE = 'sdfdrop-v4';
-const ASSETS = ['./', './index.html', './landing.css', './landing.js', './app.html', './styles.css', './app.js', './vendor/qrcode.min.js', './manifest.webmanifest'];
+const CACHE = 'sdfdrop-v5';
+const ASSETS = ['./', './index.html', './how-it-works.html', './features.html', './open-source.html', './faq.html', './landing.css', './landing.js', './app.html', './styles.css', './app.js', './vendor/qrcode.min.js', './manifest.webmanifest'];
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
 });

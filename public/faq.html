@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>FAQ — SdfDrop troubleshooting and answers</title>
+<meta name="description" content="SdfDrop FAQ: can't see devices, room codes, limits, phones, classroom broadcast, Render sleep. Fixes that actually work." />
+<link rel="canonical" href="https://sdfdrop.onrender.com/faq.html" />
+<meta name="robots" content="index, follow" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="sdfdrop" />
+<meta property="og:title" content="FAQ — SdfDrop" />
+<meta property="og:description" content="Can't see a device? Limits? Phones? Answers here." />
+<meta property="og:url" content="https://sdfdrop.onrender.com/faq.html" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="FAQ — SdfDrop" />
+<meta name="twitter:description" content="Can't see a device? Limits? Phones? Answers here." />
+<meta name="theme-color" content="#2563eb" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%232563eb' d='M4 32 60 6 36 60l-8-20z'/%3E%3Cpath fill='%2393c5fd' d='M28 40 60 6 36 60z' opacity='.55'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="landing.css" />
+</head>
+<body>
+<h1 class="sr-only">SdfDrop frequently asked questions</h1>
+
+<header class="nav" id="topnav">
+  <a class="brand" href="index.html" aria-label="sdfdrop home">
+    <svg viewBox="0 0 64 64" width="34" height="34" aria-hidden="true"><path fill="#2563eb" d="M4 32 60 6 36 60l-8-20z"/><path fill="#93c5fd" d="M28 40 60 6 36 60z" opacity=".55"/></svg>
+    <span class="brand-text"><strong>SdfDrop</strong><small>Share • Connect • Explore</small></span>
+  </a>
+  <nav class="links" id="navlinks" aria-label="Sections">
+    <a href="how-it-works.html">How it works</a>
+    <a href="features.html">Features</a>
+    <a href="open-source.html">Open Source</a>
+    <a href="faq.html" aria-current="page">FAQ</a>
+  </nav>
+  <div class="nav-cta">
+    <a class="btn primary sm" href="app.html">Open SdfDrop <span aria-hidden="true">↗</span></a>
+    <button class="menu-btn" id="menubtn" aria-label="Open menu" aria-expanded="false" aria-controls="navlinks">☰</button>
+  </div>
+</header>
+
+<main>
+  <section class="split">
+    <p class="eyebrow">ANSWERS</p>
+    <h2>FAQ</h2>
+    <p class="muted">Fixes that actually work. Still stuck? Open the app and check the Help dialog diagnostics.</p>
+    <div class="faq">
+      <details open><summary>Same WiFi, but devices can't see each other?</summary><p>Use the exact same WiFi name on both (2.4 vs 5 GHz can isolate), turn VPNs off, disable hotel-style client isolation if present. Compare the /debug key hashes on both devices — a shared hash means auto-discovery will work. Otherwise just join the same room code: it always works.</p></details>
+      <details><summary>Is it really free? Any limits?</summary><p>Yes — free, no accounts. P2P has no practical cap; server-relayed files cap at 100MB, text at 8KB, rooms at 100 members.</p></details>
+      <details><summary>Do my files get uploaded anywhere?</summary><p>No. Files travel directly between browsers over an encrypted channel. The server only swaps connection handshakes — and relays chunks without storing them if P2P fails.</p></details>
+      <details><summary>Room code mismatch?</summary><p>Both banners must show the identical code and headcount. The sender's toast tells the truth: “Broadcasting to 0” means nobody else is in the room yet.</p></details>
+      <details><summary>Nothing arrives after Send to room?</summary><p>Students must tap Accept first, then the teacher taps Send now (or waits for the 45s auto-send). Use Resend for late accepters.</p></details>
+      <details><summary>Does it work on phones?</summary><p>Yes — responsive from phone to desktop, installable as a PWA. Keep the tab in the foreground and the screen on during big transfers.</p></details>
+      <details><summary>Layout looks broken on my phone?</summary><p>Hard-refresh to drop the cached stylesheet (reload twice on mobile). The service worker uses network-first navigation so updates apply.</p></details>
+      <details><summary>First load on Render is slow?</summary><p>The free tier sleeps when idle — the first load after sleep takes ~30s, then it reconnects by itself.</p></details>
+    </div>
+    <div class="cta-row center"><a class="btn primary" href="app.html">Open SdfDrop <span aria-hidden="true">→</span></a><a class="btn ghost" href="how-it-works.html">How it works</a></div>
+  </section>
+
+  <footer class="foot">
+    <p>✈&nbsp; SdfDrop • Share what matters.</p>
+    <p class="muted small"><a href="index.html">Home</a> • <a href="app.html">Open app</a> • <a href="how-it-works.html">How it works</a> • <a href="features.html">Features</a> • <a href="https://github.com/sdfprwz/sdfdrop" target="_blank" rel="noopener">GitHub</a> • MIT • <span id="year">2026</span></p>
+  </footer>
+</main>
+
+<script src="landing.js"></script>
+</body>
+</html>

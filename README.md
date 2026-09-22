@@ -93,12 +93,13 @@ sdfdrop/
 ├── package.json
 └── public/
     ├── index.html       # landing page (/, forwards ?room= links to the app)
-    ├── landing.css / landing.js
-    ├── app.html         # sdfdrop app (radar, rooms, transfers, modals)
+    ├── how-it-works.html / features.html / open-source.html / faq.html
+    ├── landing.css / landing.js  # marketing pages
+    ├── app.html         # sdfdrop app (/app: radar, rooms, transfers, modals)
     ├── app.js           # WebRTC + relay + broadcast client
     ├── styles.css       # app responsive phone → desktop styles
     ├── manifest.webmanifest  # PWA (starts at app.html)
-    └── sw.js            # PWA shell (v4, network-first pages)
+    └── sw.js            # PWA shell (v5, network-first pages)
 ```
 
 MIT — built for sdfdrop.

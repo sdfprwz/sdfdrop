@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>How it works — SdfDrop P2P file sharing</title>
+<meta name="description" content="How SdfDrop works: same-WiFi auto-discovery, room codes for any network, WebRTC peer-to-peer with relay fallback. No signup, files never stored." />
+<link rel="canonical" href="https://sdfdrop.onrender.com/how-it-works.html" />
+<meta name="robots" content="index, follow" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="sdfdrop" />
+<meta property="og:title" content="How it works — SdfDrop" />
+<meta property="og:description" content="Same WiFi auto-discovery, room codes, WebRTC P2P with relay fallback." />
+<meta property="og:url" content="https://sdfdrop.onrender.com/how-it-works.html" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="How it works — SdfDrop" />
+<meta name="twitter:description" content="Same WiFi auto-discovery, room codes, WebRTC P2P with relay fallback." />
+<meta name="theme-color" content="#2563eb" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%232563eb' d='M4 32 60 6 36 60l-8-20z'/%3E%3Cpath fill='%2393c5fd' d='M28 40 60 6 36 60z' opacity='.55'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="landing.css" />
+</head>
+<body>
+<h1 class="sr-only">How SdfDrop file sharing works</h1>
+
+<header class="nav" id="topnav">
+  <a class="brand" href="index.html" aria-label="sdfdrop home">
+    <svg viewBox="0 0 64 64" width="34" height="34" aria-hidden="true"><path fill="#2563eb" d="M4 32 60 6 36 60l-8-20z"/><path fill="#93c5fd" d="M28 40 60 6 36 60z" opacity=".55"/></svg>
+    <span class="brand-text"><strong>SdfDrop</strong><small>Share • Connect • Explore</small></span>
+  </a>
+  <nav class="links" id="navlinks" aria-label="Sections">
+    <a href="how-it-works.html" aria-current="page">How it works</a>
+    <a href="features.html">Features</a>
+    <a href="open-source.html">Open Source</a>
+    <a href="faq.html">FAQ</a>
+  </nav>
+  <div class="nav-cta">
+    <a class="btn primary sm" href="app.html">Open SdfDrop <span aria-hidden="true">↗</span></a>
+    <button class="menu-btn" id="menubtn" aria-label="Open menu" aria-expanded="false" aria-controls="navlinks">☰</button>
+  </div>
+</header>
+
+<main>
+  <section class="split">
+    <p class="eyebrow">FAST&nbsp;&nbsp;•&nbsp;&nbsp;PRIVATE&nbsp;&nbsp;•&nbsp;&nbsp;NO LIMITS</p>
+    <h2>How it works</h2>
+    <p class="muted">Three ways to connect. One app. No accounts, no uploads, no storage.</p>
+    <ol class="steps">
+      <li><span class="n">1</span><div><strong>Same WiFi — automatic</strong><p>Open SdfDrop on both devices. The server groups devices on the same network (public IPv4, IPv6 /64 prefix, private /24) and each side instantly lists the other on its radar. Nothing to type, no code.</p></div></li>
+      <li><span class="n">2</span><div><strong>Different networks — room code</strong><p>Tap Room, enter the same 4–12 letter code (e.g. BEACH42) on both devices — or scan the QR. Both join the room and see each other even across mobile data, hotspots and VPNs.</p></div></li>
+      <li><span class="n">3</span><div><strong>Tap a device and send</strong><p>Pick files or text. The other side taps Accept. Files fly over an encrypted WebRTC DataChannel with live progress and speed. P2P blocked? Traffic relays through the server automatically.</p></div></li>
+    </ol>
+  </section>
+
+  <section class="split">
+    <h2>Under the hood</h2>
+    <ol class="steps">
+      <li><span class="n">A</span><div><strong>Signaling only</strong><p>Devices exchange WebRTC offers, answers and ICE candidates through the server over WebSocket. The server never stores your files.</p></div></li>
+      <li><span class="n">B</span><div><strong>Direct P2P first</strong><p>16KB DataChannel chunks with backpressure, DTLS encrypted end-to-end. STUN plus OpenRelay TURN help punch through NATs.</p></div></li>
+      <li><span class="n">C</span><div><strong>Relay fallback</strong><p>Symmetric NAT or VPN blocking P2P? Chunks relay over WebSocket (100MB cap per file, header-before-chunks sessions, sequence checks).</p></div></li>
+      <li><span class="n">D</span><div><strong>Room broadcast</strong><p>Teachers send once — the server fans the transfer out to every room member. Accepts are counted live before the send.</p></div></li>
+    </ol>
+    <div class="cta-row center"><a class="btn primary" href="app.html">Try it now <span aria-hidden="true">→</span></a><a class="btn ghost" href="features.html">See features</a></div>
+  </section>
+
+  <footer class="foot">
+    <p>✈&nbsp; SdfDrop • Share what matters.</p>
+    <p class="muted small"><a href="index.html">Home</a> • <a href="app.html">Open app</a> • <a href="features.html">Features</a> • <a href="faq.html">FAQ</a> • <a href="https://github.com/sdfprwz/sdfdrop" target="_blank" rel="noopener">GitHub</a> • MIT • <span id="year">2026</span></p>
+  </footer>
+</main>
+
+<script src="landing.js"></script>
+</body>
+</html>

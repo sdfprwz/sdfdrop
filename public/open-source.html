@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Open Source — SdfDrop on GitHub</title>
+<meta name="description" content="SdfDrop is MIT-licensed open source. Read the signaling code, self-host on Render, or contribute on GitHub." />
+<link rel="canonical" href="https://sdfdrop.onrender.com/open-source.html" />
+<meta name="robots" content="index, follow" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="sdfdrop" />
+<meta property="og:title" content="Open Source — SdfDrop" />
+<meta property="og:description" content="MIT licensed. Self-host, read the code, contribute." />
+<meta property="og:url" content="https://sdfdrop.onrender.com/open-source.html" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Open Source — SdfDrop" />
+<meta name="twitter:description" content="MIT licensed. Self-host, read the code, contribute." />
+<meta name="theme-color" content="#2563eb" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%232563eb' d='M4 32 60 6 36 60l-8-20z'/%3E%3Cpath fill='%2393c5fd' d='M28 40 60 6 36 60z' opacity='.55'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="landing.css" />
+</head>
+<body>
+<h1 class="sr-only">SdfDrop open source project</h1>
+
+<header class="nav" id="topnav">
+  <a class="brand" href="index.html" aria-label="sdfdrop home">
+    <svg viewBox="0 0 64 64" width="34" height="34" aria-hidden="true"><path fill="#2563eb" d="M4 32 60 6 36 60l-8-20z"/><path fill="#93c5fd" d="M28 40 60 6 36 60z" opacity=".55"/></svg>
+    <span class="brand-text"><strong>SdfDrop</strong><small>Share • Connect • Explore</small></span>
+  </a>
+  <nav class="links" id="navlinks" aria-label="Sections">
+    <a href="how-it-works.html">How it works</a>
+    <a href="features.html">Features</a>
+    <a href="open-source.html" aria-current="page">Open Source</a>
+    <a href="faq.html">FAQ</a>
+  </nav>
+  <div class="nav-cta">
+    <a class="btn primary sm" href="app.html">Open SdfDrop <span aria-hidden="true">↗</span></a>
+    <button class="menu-btn" id="menubtn" aria-label="Open menu" aria-expanded="false" aria-controls="navlinks">☰</button>
+  </div>
+</header>
+
+<main>
+  <section class="split">
+    <p class="eyebrow">TRANSPARENT • COMMUNITY-DRIVEN</p>
+    <h2>Open Source</h2>
+    <p class="muted">MIT licensed. Read the signaling code, run your own server, or contribute on GitHub.</p>
+    <div class="cta-row center">
+      <a class="btn ghost" href="https://github.com/sdfprwz/sdfdrop" target="_blank" rel="noopener">View on GitHub</a>
+      <a class="btn primary" href="app.html">Open SdfDrop <span aria-hidden="true">↗</span></a>
+    </div>
+  </section>
+
+  <section class="split">
+    <h2>Self-host in minutes</h2>
+    <ol class="steps">
+      <li><span class="n">1</span><div><strong>Run locally</strong><p>npm install, npm start, open http://localhost:3000. Same-WiFi sharing works out of the box.</p></div></li>
+      <li><span class="n">2</span><div><strong>Deploy on Render</strong><p>New Web Service from the repo. Build: npm install. Start: npm start. Health check: /health. Same code serves frontend and signaling.</p></div></li>
+      <li><span class="n">3</span><div><strong>Bring your own TURN (optional)</strong><p>Defaults use Google STUN plus OpenRelay TURN. Override with TURN_URLS, TURN_USER and TURN_PASS environment variables.</p></div></li>
+    </ol>
+  </section>
+
+  <section class="split">
+    <h2>Trust model</h2>
+    <div class="faq">
+      <details open><summary>What does the server see?</summary><p>Peer names, room codes and WebRTC handshake data — plus relayed chunks when P2P fails. It never stores files and has no database or accounts.</p></details>
+      <details><summary>When is it truly end-to-end encrypted?</summary><p>On the direct P2P path (DTLS), if you trust the signaling server that introduced the peers. Self-host for sensitive files; don't trade secrets over random public instances.</p></details>
+      <details><summary>How is abuse handled?</summary><p>Same-origin WebSocket policy, per-IP connection caps, message rate limits, 100MB relay cap, header-before-chunks sessions with sequence checks, and minimal security headers with no third-party scripts.</p></details>
+    </div>
+    <div class="cta-row center"><a class="btn ghost" href="https://github.com/sdfprwz/sdfdrop" target="_blank" rel="noopener">Read the code</a><a class="btn primary" href="app.html">Open SdfDrop <span aria-hidden="true">↗</span></a></div>
+  </section>
+
+  <footer class="foot">
+    <p>✈&nbsp; SdfDrop • Share what matters.</p>
+    <p class="muted small"><a href="index.html">Home</a> • <a href="app.html">Open app</a> • <a href="how-it-works.html">How it works</a> • <a href="faq.html">FAQ</a> • <a href="https://github.com/sdfprwz/sdfdrop" target="_blank" rel="noopener">GitHub</a> • MIT • <span id="year">2026</span></p>
+  </footer>
+</main>
+
+<script src="landing.js"></script>
+</body>
+</html>

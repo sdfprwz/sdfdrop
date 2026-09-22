@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Features — SdfDrop rooms, broadcast, PWA</title>
+<meta name="description" content="SdfDrop features: same-WiFi radar, internet room codes, classroom broadcast, private P2P with relay fallback, any file type, installable PWA." />
+<link rel="canonical" href="https://sdfdrop.onrender.com/features.html" />
+<meta name="robots" content="index, follow" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="sdfdrop" />
+<meta property="og:title" content="Features — SdfDrop" />
+<meta property="og:description" content="Rooms, classroom broadcast, private P2P, any file type, PWA." />
+<meta property="og:url" content="https://sdfdrop.onrender.com/features.html" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Features — SdfDrop" />
+<meta name="twitter:description" content="Rooms, classroom broadcast, private P2P, any file type, PWA." />
+<meta name="theme-color" content="#2563eb" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%232563eb' d='M4 32 60 6 36 60l-8-20z'/%3E%3Cpath fill='%2393c5fd' d='M28 40 60 6 36 60z' opacity='.55'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="landing.css" />
+</head>
+<body>
+<h1 class="sr-only">SdfDrop features</h1>
+
+<header class="nav" id="topnav">
+  <a class="brand" href="index.html" aria-label="sdfdrop home">
+    <svg viewBox="0 0 64 64" width="34" height="34" aria-hidden="true"><path fill="#2563eb" d="M4 32 60 6 36 60l-8-20z"/><path fill="#93c5fd" d="M28 40 60 6 36 60z" opacity=".55"/></svg>
+    <span class="brand-text"><strong>SdfDrop</strong><small>Share • Connect • Explore</small></span>
+  </a>
+  <nav class="links" id="navlinks" aria-label="Sections">
+    <a href="how-it-works.html">How it works</a>
+    <a href="features.html" aria-current="page">Features</a>
+    <a href="open-source.html">Open Source</a>
+    <a href="faq.html">FAQ</a>
+  </nav>
+  <div class="nav-cta">
+    <a class="btn primary sm" href="app.html">Open SdfDrop <span aria-hidden="true">↗</span></a>
+    <button class="menu-btn" id="menubtn" aria-label="Open menu" aria-expanded="false" aria-controls="navlinks">☰</button>
+  </div>
+</header>
+
+<main>
+  <section class="split">
+    <p class="eyebrow">WHAT YOU GET</p>
+    <h2>Features</h2>
+    <p class="muted">Everything you need to move files between your own devices — or a whole classroom.</p>
+  </section>
+
+  <section class="cards" aria-label="Core features">
+    <article class="card"><span class="tile">⚡</span><div><h3>Lightning Fast</h3><p>Direct peer-to-peer transfer with 16KB chunks, backpressure and live speed. No waiting on uploads.</p></div></article>
+    <article class="card"><span class="tile">🛡️</span><div><h3>Private</h3><p>Your files, your control. DTLS-encrypted P2P first, TURN/relay fallback. Files are never stored on the server.</p></div></article>
+    <article class="card"><span class="tile">👥</span><div><h3>No Account</h3><p>Join a room and share. Same WiFi needs no code at all; internet sharing needs one short code.</p></div></article>
+    <article class="card"><span class="tile">∞</span><div><h3>Any File Type</h3><p>From documents to videos. Text messages and links too, plus QR connect codes.</p></div></article>
+    <article class="card"><span class="tile">📢</span><div><h3>Room broadcast</h3><p>Teachers tap Send to room — one upload fans out to everyone in the room, with live accept counts and resend for late joiners.</p></div></article>
+    <article class="card"><span class="tile">📱</span><div><h3>Installable PWA</h3><p>Add to Home Screen on phone or desktop. Responsive UI, dark/light themes, offline shell.</p></div></article>
+  </section>
+
+  <section class="split">
+    <h2>Limits, honestly stated</h2>
+    <ol class="steps">
+      <li><span class="n">•</span><div><strong>P2P transfers</strong><p>No practical size cap — bounded by device memory and patience. WakeLock keeps the screen on during big sends.</p></div></li>
+      <li><span class="n">•</span><div><strong>Relayed transfers</strong><p>100MB per file, 100KB chunks, text 8KB. Enough for notes, slides and photos when P2P is blocked.</p></div></li>
+      <li><span class="n">•</span><div><strong>Rooms</strong><p>Up to 100 members and 3 rooms per device. Codes are 4–12 letters and numbers.</p></div></li>
+    </ol>
+    <div class="cta-row center"><a class="btn primary" href="app.html">Start sharing <span aria-hidden="true">→</span></a><a class="btn ghost" href="how-it-works.html">How it works</a></div>
+  </section>
+
+  <footer class="foot">
+    <p>✈&nbsp; SdfDrop • Share what matters.</p>
+    <p class="muted small"><a href="index.html">Home</a> • <a href="app.html">Open app</a> • <a href="how-it-works.html">How it works</a> • <a href="faq.html">FAQ</a> • <a href="https://github.com/sdfprwz/sdfdrop" target="_blank" rel="noopener">GitHub</a> • MIT • <span id="year">2026</span></p>
+  </footer>
+</main>
+
+<script src="landing.js"></script>
+</body>
+</html>

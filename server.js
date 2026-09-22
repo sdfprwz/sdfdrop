@@ -108,6 +108,11 @@ app.get('/debug', (req, res) => {
   function rawIpSafe(v) { return v; }
 });
 
+// App lives at /app (landing is /). Explicit so /app never falls through to landing.
+app.get(['/app', '/app.html'], (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'app.html'));
+});
+
 // SPA fallback (keep /health /config /stats working)
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/ws') || req.path.startsWith('/health') || req.path.startsWith('/config') || req.path.startsWith('/stats')) return next();
