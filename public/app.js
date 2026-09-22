@@ -250,22 +250,33 @@
   $('#btnCopyQr').onclick=async()=>{await copyText($('#qrLink').textContent);toast('Link copied ✓','ok');};
   async function copyText(t){try{await navigator.clipboard.writeText(t)}catch{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}}
 
-  // No external QR library: avoids a supply-chain script on a file-sharing
-  // page. The canvas shows the room code big; the link below is copyable.
+  // QR via locally vendored generator (no CDN supply chain).
+  // Encodes the room join link: scan → open → auto-joins the room.
   function drawQR(canvas,text){
     const ctx=canvas.getContext('2d');
     const W=canvas.width,H=canvas.height;
-    ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
-    ctx.fillStyle='#111';ctx.textAlign='center';
-    const code=myRoom||'SDF';
-    ctx.font='bold 44px monospace';
-    ctx.fillText(code,W/2,H/2-8);
-    ctx.font='13px monospace';
-    ctx.fillText('enter this code on',W/2,H/2+26);
-    ctx.fillText('the other device',W/2,H/2+44);
-    canvas.style.display='';
-    const holder=document.getElementById('qrHolder');
-    if(holder)holder.innerHTML='';
+    function fallback(){
+      ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='#111';ctx.textAlign='center';
+      const code=myRoom||'SDF';
+      ctx.font='bold 44px monospace';ctx.fillText(code,W/2,H/2-8);
+      ctx.font='13px monospace';
+      ctx.fillText('enter this code on',W/2,H/2+26);
+      ctx.fillText('the other device',W/2,H/2+44);
+    }
+    try{
+      if(typeof qrcode==='undefined')return fallback();
+      const qr=qrcode(0,'M'); // 0 = auto version
+      qr.addData(text);qr.make();
+      const n=qr.getModuleCount(),qz=4,total=n+qz*2;
+      const scale=Math.max(1,Math.floor(Math.min(W,H)/total));
+      const size=scale*total,ox=Math.floor((W-size)/2),oy=Math.floor((H-size)/2);
+      ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='#111';
+      for(let r=0;r<n;r++)for(let c=0;c<n;c++){
+        if(qr.isDark(r,c))ctx.fillRect(ox+(c+qz)*scale,oy+(r+qz)*scale,scale,scale);
+      }
+    }catch{fallback();}
   }
 
   // ---------- peers radar (clean: no forced text, just pill + popup help) ----------

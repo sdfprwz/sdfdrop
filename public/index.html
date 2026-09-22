@@ -23,7 +23,7 @@
   <div class="top-actions">
     <span id="statusPill" class="pill offline"><span class="dot"></span><span id="statusText">connecting…</span></span>
     <button id="btnRoom" class="btn ghost" title="Join / create internet room">🔗 <span class="hide-sm">Room</span></button>
-    <button id="btnQr" class="btn ghost" title="Show connect code">📷 <span class="hide-sm">Code</span></button>
+    <button id="btnQr" class="btn ghost" title="Show QR to connect">📷 <span class="hide-sm">QR</span></button>
     <button id="btnHelp" class="btn ghost" title="How to connect / troubleshoot">❓</button>
     <button id="btnText" class="btn ghost" title="Send text">✉️</button>
     <button id="btnTheme" class="btn ghost" title="Toggle theme">🌙</button>
@@ -150,11 +150,11 @@
   </div>
 </div>
 
-<!-- Connect-code modal -->
+<!-- QR connect modal -->
 <div id="qrModal" class="modal hidden" role="dialog" aria-modal="true">
   <div class="modal-card center">
-    <h3>📷 Connect another device</h3>
-    <p class="muted">Enter this code on the other device — or open the link below.</p>
+    <h3>📷 Scan to connect</h3>
+    <p class="muted">Point the other device's camera at this — it joins your room instantly. Or share the link below.</p>
     <canvas id="qrCanvas" width="220" height="220"></canvas>
     <p><code id="qrLink"></code></p>
     <div class="row center">
@@ -180,6 +180,7 @@
 
 <div id="toasts" class="toasts" aria-live="polite"></div>
 
+<script src="vendor/qrcode.min.js" defer></script>
 <script src="app.js"></script>
 </body>
 </html>
