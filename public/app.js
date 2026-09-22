@@ -544,7 +544,7 @@
       done(link,label){
         bar.value=100;st.innerHTML+=` • <span style="color:#22c55e">done ✓</span>`;
         cancelBtn.remove();
-        if(link){const a=document.createElement('a');a.href=link.url;a.download=link.name;a.textContent='⬇ '+label||'Download';a.style.marginTop='6px';a.style.display='inline-block';act.appendChild(a);}
+        if(link){const a=document.createElement('a');a.href=link.url;a.download=link.name;a.textContent='⬇ '+(label||'Download');a.style.marginTop='6px';a.style.display='inline-block';act.appendChild(a);}
       },
       fail(msg){st.innerHTML+=` • <span style="color:#f87171">${escapeHtml(msg)}</span>`;cancelBtn.remove();}
     };
@@ -558,6 +558,13 @@
   // ---------- sending ----------
   async function sendFilesTo(peer,files){
     for(const f of files)await sendOneFile(peer,f);
+  }
+  function sendTransferCancel(peerId,id,mode='relay'){
+    const c=pcs.get(peerId);
+    if(mode==='p2p' && c?.dc?.readyState==='open'){
+      try{c.dc.send(JSON.stringify({kind:'file-cancelled',id}));return;}catch{}
+    }
+    send({type:'relay',to:peerId,data:{kind:'file-cancelled',id}});
   }
   async function sendOneFile(peer,file){
     const id=uid(6);
@@ -573,14 +580,15 @@
     dc.send(JSON.stringify({kind:'file-header',id,name:file.name,size:file.size,mime:file.type||'application/octet-stream'}));
     toast(`Waiting for ${peer.name} to accept…`,'info');
     try{await accepted;}catch{ui.fail('declined');pendingAccept.delete(id);return;}
-    if(ui.cancelled)return;
+    pendingAccept.delete(id);
+    if(ui.cancelled){sendTransferCancel(peer.id,id,'p2p');return;}
     let offset=0;
     while(offset<file.size){
-      if(ui.cancelled)return;
+      if(ui.cancelled){sendTransferCancel(peer.id,id,'p2p');return;}
       const slice=file.slice(offset,offset+CHUNK);
       const buf=await slice.arrayBuffer();
       while(dc.bufferedAmount>1024*1024){await new Promise(r=>{dc.onbufferedamountlow=()=>r();setTimeout(r,200);});}
-      if(ui.cancelled)return;
+      if(ui.cancelled){sendTransferCancel(peer.id,id,'p2p');return;}
       dc.send(buf);offset+=buf.byteLength;ui.update(offset);
     }
     dc.send(JSON.stringify({kind:'file-done',id}));
@@ -612,10 +620,11 @@
     toast(`P2P unavailable — relaying via server 🌐`,'info');
     const accepted=new Promise((res,rej)=>{pendingAccept.set(id,{res,rej});setTimeout(()=>rej(new Error('declined/timeout')),90000);});
     try{await accepted;}catch{ui.fail('declined');pendingAccept.delete(id);return;}
-    if(ui.cancelled)return;
+    pendingAccept.delete(id);
+    if(ui.cancelled){sendTransferCancel(peer.id,id,'relay');return;}
     const STEP_BIN=45*1024;let seq=0; // → ~60KB base64, under the 100KB chunk cap
     for(let off=0;off<file.size;off+=STEP_BIN){
-      if(ui.cancelled)return;
+      if(ui.cancelled){sendTransferCancel(peer.id,id,'relay');return;}
       const buf=await file.slice(off,off+STEP_BIN).arrayBuffer();
       send({type:'relay',to:peer.id,data:{kind:'file-chunk',id,seq:seq++,chunk:b64encode(buf),last:off+STEP_BIN>=file.size}});
       ui.update(Math.min(file.size,off+STEP_BIN));
@@ -634,7 +643,7 @@
     // Room broadcasts arrive as server fan-out: same handling as relay, room-tagged.
     const tmode=pkt.room?'room':mode;
     if(pkt.kind==='file-header'){
-      incoming.set(pkt.id,{meta:pkt,chunks:[],b64:'',received:0,from:fromId,fromName:peer.name,mode:tmode,room:pkt.room||null,ui:null,accepted:false});
+      incoming.set(pkt.id,{meta:pkt,chunks:[],b64:'',received:0,nextSeq:0,from:fromId,fromName:peer.name,mode:tmode,room:pkt.room||null,ui:null,accepted:false});
       recvQueue.push(pkt.id);renderRecvModal();
       // Expire stale unaccepted transfers so dead senders can't leak memory
       setTimeout(()=>{
@@ -649,8 +658,12 @@
     }
     else if(pkt.kind==='file-chunk'){
       const inc=incoming.get(pkt.id);if(!inc)return;
-      inc.b64+=pkt.chunk;inc.received=Math.round(inc.b64.length/4*3);
-      if(inc.ui)inc.ui.update(Math.min(inc.meta.size,inc.received));
+      if(inc.mode==='p2p')return;
+      if(typeof pkt.chunk!=='string'||(pkt.seq!==undefined&&pkt.seq!==inc.nextSeq))return failIncoming(pkt.id,'invalid chunk sequence');
+      const binLen=Math.max(0,Math.floor(pkt.chunk.length*3/4)-(pkt.chunk.endsWith('==')?2:pkt.chunk.endsWith('=')?1:0));
+      if(!binLen||inc.received+binLen>inc.meta.size)return failIncoming(pkt.id,'invalid transfer size');
+      inc.b64+=pkt.chunk;inc.received+=binLen;inc.nextSeq++;
+      if(inc.ui)inc.ui.update(inc.received);
     }
     else if(pkt.kind==='file-done'){finishIncoming(pkt.id);}
     else if(pkt.kind==='file-cancelled'){
@@ -684,6 +697,13 @@
     }
     else if(pkt.kind==='decline'){pendingAccept.get(pkt.id)?.rej(new Error('declined'));}
   }
+  function failIncoming(id,msg){
+    const inc=incoming.get(id);if(!inc)return;
+    incoming.delete(id);
+    const qi=recvQueue.indexOf(id);if(qi>=0)recvQueue.splice(qi,1);
+    if(inc.ui)inc.ui.fail(msg);else toast(`Transfer rejected: ${msg}`,'err');
+    renderRecvModal();
+  }
   function handleBinary(fromId,buf,mode){
     // find latest unaccepted? find active accepted transfer from this peer
     let target=null;
@@ -693,6 +713,7 @@
       for(const[id,inc]of incoming){if(inc.from===fromId&&!inc.done){target=inc;break;}}
     }
     if(!target)return;
+    if(target.received+buf.byteLength>target.meta.size){failIncoming(target.meta.id,'invalid transfer size');return;}
     target.chunks.push(buf);target.received+=buf.byteLength;
     if(target.ui)target.ui.update(target.received);
   }
@@ -737,7 +758,9 @@
     renderRecvModal();
   };
   function finishIncoming(id){
-    const inc=incoming.get(id);if(!inc||inc.done)return;inc.done=true;
+    const inc=incoming.get(id);if(!inc||inc.done)return;
+    if(inc.received!==inc.meta.size){failIncoming(id,'incomplete transfer');return;}
+    inc.done=true;
     let blob;
     if(inc.b64){blob=new Blob([b64ToBytes(inc.b64)],{type:inc.meta.mime});}
     else {blob=new Blob(inc.chunks,{type:inc.meta.mime});}

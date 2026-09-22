@@ -140,8 +140,9 @@ const MAX_ROOM_SIZE = 100; // classroom scale; larger rooms get politely refused
 const MAX_ACTIVE_SENDS_PER_PEER = 5; // bounds blind-chunk spam: chunks need a prior header
 const SESSION_TTL_MS = 15 * 60 * 1000;
 const ipConns = new Map(); // ip -> active WS count
-// relay/broadcast transfer sessions: key `${fromId}:${toOrRoom}:${transferId}` -> timestamp.
-// A file-chunk/done is only forwarded when its file-header was seen first.
+// Relay/broadcast transfer sessions: key `${fromId}:${toOrRoom}:${transferId}`
+// -> { t, size, bytes, nextSeq }. Keeping byte/sequence state server-side
+// prevents a valid header from being used to stream unbounded relay data.
 const relaySessions = new Map();
 function sessionKey(from, target, tid) { return `${from}:${target}:${tid}`; }
 function senderSessionCount(from) {
@@ -149,9 +150,16 @@ function senderSessionCount(from) {
   for (const k of relaySessions.keys()) if (k.startsWith(from + ':')) n++;
   return n;
 }
+function b64DecodedLength(s) {
+  if (typeof s !== 'string' || !/^[A-Za-z0-9+/]*={0,2}$/.test(s) || s.length % 4 !== 0) return -1;
+  const pad = s.endsWith('==') ? 2 : s.endsWith('=') ? 1 : 0;
+  return Math.max(0, (s.length * 3) / 4 - pad);
+}
 setInterval(() => {
   const now = Date.now();
-  for (const [k, t] of relaySessions) if (now - t > SESSION_TTL_MS) relaySessions.delete(k);
+  for (const [k, session] of relaySessions) {
+    if (now - session.t > SESSION_TTL_MS) relaySessions.delete(k);
+  }
 }, 5 * 60 * 1000);
 
 function getIp(req) {
@@ -164,13 +172,14 @@ function getIp(req) {
   }
   const fwd = pick(req.headers['x-forwarded-for']);
   if (fwd) {
-    // A proxy APPENDS the real client IP to the end; leftmost entries are
-    // client-controlled and must not be trusted (previously took leftmost).
+    // Render documents the real client IP as the FIRST X-Forwarded-For
+    // entry. Later entries are proxy hops; using the last entry would group
+    // unrelated users together behind the same proxy and break rate limits.
     const parts = fwd.split(',').map(s => s.trim().replace(/^\[|\]$/g, '')).filter(Boolean);
-    const last = parts[parts.length - 1];
-    if (last) {
-      if (/^\d+\.\d+\.\d+\.\d+:\d+$/.test(last)) return last.slice(0, last.lastIndexOf(':'));
-      return last;
+    const first = parts[0];
+    if (first) {
+      if (/^\d+\.\d+\.\d+\.\d+:\d+$/.test(first)) return first.slice(0, first.lastIndexOf(':'));
+      return first;
     }
   }
   return req.socket?.remoteAddress || 'unknown';
@@ -505,6 +514,9 @@ wss.on('connection', (ws, req) => {
           if (typeof d.chunk !== 'string' || d.chunk.length === 0 || d.chunk.length > RELAY_CHUNK_MAX) {
             send(ws, { type: 'error', message: 'Chunk too large' }); break;
           }
+          if (d.seq !== undefined && (!Number.isInteger(d.seq) || d.seq < 0)) {
+            send(ws, { type: 'error', message: 'Bad chunk sequence' }); break;
+          }
         }
         const target = peers.get(msg.to);
         if (!target) { send(ws, { type: 'error', message: 'Peer offline' }); break; }
@@ -516,11 +528,27 @@ wss.on('connection', (ws, req) => {
           if (senderSessionCount(id) >= MAX_ACTIVE_SENDS_PER_PEER && !relaySessions.has(skey)) {
             send(ws, { type: 'error', message: 'Too many active sends.' }); break;
           }
-          relaySessions.set(skey, Date.now());
+          relaySessions.set(skey, { t: Date.now(), size: d.size, bytes: 0, nextSeq: 0 });
         } else if (d.kind === 'file-chunk' || d.kind === 'file-done' || d.kind === 'file-cancelled') {
-          if (!relaySessions.has(skey)) { send(ws, { type: 'error', message: 'Unknown transfer' }); break; }
-          relaySessions.set(skey, Date.now());
-          if (d.kind === 'file-done' || d.kind === 'file-cancelled') relaySessions.delete(skey);
+          const session = relaySessions.get(skey);
+          if (!session) { send(ws, { type: 'error', message: 'Unknown transfer' }); break; }
+          session.t = Date.now();
+          if (d.kind === 'file-chunk') {
+            const n = b64DecodedLength(d.chunk);
+            if (n <= 0 || session.bytes + n > session.size ||
+                (d.seq !== undefined && d.seq !== session.nextSeq)) {
+              send(ws, { type: 'error', message: 'Invalid file chunk' }); break;
+            }
+            session.bytes += n;
+            session.nextSeq++;
+          } else if (d.kind === 'file-done') {
+            if (session.bytes !== session.size) {
+              send(ws, { type: 'error', message: 'Incomplete transfer' }); break;
+            }
+            relaySessions.delete(skey);
+          } else {
+            relaySessions.delete(skey);
+          }
         }
         send(target.ws, { type: 'relay', from: id, data: msg.data });
         break;
@@ -551,17 +579,36 @@ wss.on('connection', (ws, req) => {
           if (typeof d.chunk !== 'string' || d.chunk.length === 0 || d.chunk.length > RELAY_CHUNK_MAX) {
             send(ws, { type: 'error', message: 'Chunk too large' }); break;
           }
+          if (d.seq !== undefined && (!Number.isInteger(d.seq) || d.seq < 0)) {
+            send(ws, { type: 'error', message: 'Bad chunk sequence' }); break;
+          }
         }
         const skey = sessionKey(id, 'ROOM:' + room, d.id);
         if (d.kind === 'file-header') {
           if (senderSessionCount(id) >= MAX_ACTIVE_SENDS_PER_PEER && !relaySessions.has(skey)) {
             send(ws, { type: 'error', message: 'Too many active sends.' }); break;
           }
-          relaySessions.set(skey, Date.now());
+          relaySessions.set(skey, { t: Date.now(), size: d.size, bytes: 0, nextSeq: 0 });
         } else if (d.kind === 'file-chunk' || d.kind === 'file-done' || d.kind === 'file-cancelled') {
-          if (!relaySessions.has(skey)) { send(ws, { type: 'error', message: 'Unknown transfer' }); break; }
-          relaySessions.set(skey, Date.now());
-          if (d.kind === 'file-done' || d.kind === 'file-cancelled') relaySessions.delete(skey);
+          const session = relaySessions.get(skey);
+          if (!session) { send(ws, { type: 'error', message: 'Unknown transfer' }); break; }
+          session.t = Date.now();
+          if (d.kind === 'file-chunk') {
+            const n = b64DecodedLength(d.chunk);
+            if (n <= 0 || session.bytes + n > session.size ||
+                (d.seq !== undefined && d.seq !== session.nextSeq)) {
+              send(ws, { type: 'error', message: 'Invalid file chunk' }); break;
+            }
+            session.bytes += n;
+            session.nextSeq++;
+          } else if (d.kind === 'file-done') {
+            if (session.bytes !== session.size) {
+              send(ws, { type: 'error', message: 'Incomplete transfer' }); break;
+            }
+            relaySessions.delete(skey);
+          } else {
+            relaySessions.delete(skey);
+          }
         }
         const members = rooms.get(room);
         let recipients = 0;
