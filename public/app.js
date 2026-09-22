@@ -183,7 +183,7 @@
       // Re-apply room after (re)connect — server forgets rooms on restart
       if(myRoom)send({type:'join',room:myRoom});
     }
-    else if(m.type==='peers'){peers=m.peers||[];if(m.you)myId=m.you.id;renderPeers();}
+    else if(m.type==='peers'){peers=m.peers||[];if(m.you)myId=m.you.id;renderPeers();warmConnections();}
     else if(m.type==='signal'){onSignal(m.from,m.data);}
     else if(m.type==='relay'){onRelay(m.from,m.data);}
     else if(m.type==='broadcast-sent'){
@@ -381,14 +381,13 @@
       if(bw.started||ui.cancelled)return;bw.started=true;
       sendBtn.remove();clearTimeout(timer);
       stEl.textContent=`Room ${room} • broadcasting to ${bw.accepted.size} accepted…`;
-      const b64=await blobToB64(file);
-      if(ui.cancelled){sendCancel();return;}
-      const STEP=48*1024;let seq=0;
-      for(let i=0;i<b64.length;i+=STEP){
+      const STEP_BIN=45*1024;let seq=0; // ~60KB base64 per message
+      for(let off=0;off<file.size;off+=STEP_BIN){
         if(ui.cancelled){sendCancel();return;}
-        send({type:'broadcast',room,data:{kind:'file-chunk',id,seq:seq++,chunk:b64.slice(i,i+STEP),last:i+STEP>=b64.length}});
-        ui.update(Math.min(file.size,Math.round((i+STEP)/b64.length*file.size)));
-        await new Promise(r=>setTimeout(r,10));
+        const buf=await file.slice(off,off+STEP_BIN).arrayBuffer();
+        send({type:'broadcast',room,data:{kind:'file-chunk',id,seq:seq++,chunk:b64encode(buf),last:off+STEP_BIN>=file.size}});
+        ui.update(Math.min(file.size,off+STEP_BIN));
+        while(ws&&ws.bufferedAmount>512*1024){await new Promise(r=>setTimeout(r,50));}
       }
       send({type:'broadcast',room,data:{kind:'file-done',id}});
       ui.done(null);broadcastWaits.delete(id);
@@ -437,6 +436,21 @@
 
   // ---------- WebRTC ----------
   function rtcConfig(){return{iceServers,sdpSemantics:'unified-plan'};}
+  // Dial new peers the moment they appear: the DataChannel is already open
+  // when the user taps Send, so transfers start instantly (no offer/answer/
+  // ICE/DTLS handshake in the critical path). Lower peer id dials — the rule
+  // is identical on both sides, so they never offer at once (no glare).
+  function warmConnections(){
+    if(!myId)return;
+    const seen=new Set(peers.map(p=>p.id));
+    for(const [pid,c]of pcs){
+      if(!seen.has(pid)){try{c.dc?.close()}catch{}try{c.pc?.close()}catch{}pcs.delete(pid);}
+    }
+    for(const p of peers){
+      if(pcs.has(p.id))continue;
+      if(myId<p.id){try{getConn(p.id,true);}catch{}}
+    }
+  }
   function getConn(peerId, initiator){
     let c=pcs.get(peerId);
     if(c)return c;
@@ -456,8 +470,9 @@
       pc.createOffer().then(o=>pc.setLocalDescription(o)).then(()=>{
         send({type:'signal',to:peerId,data:{sdp:pc.localDescription}});
       }).catch(()=>{c.mode='relay';c.ready=true;if(c.onReady)c.onReady();});
-      // safety: if no connection in 8s, fall back to relay
-      setTimeout(()=>{if(pc.connectionState!=='connected'&&!c.ready){c.mode='relay';c.ready=true;if(c.onReady)c.onReady();}},8000);
+      // safety: if no connection quickly, fall back to relay (server fan-out
+      // is faster than waiting out a dead P2P path)
+      setTimeout(()=>{if(pc.connectionState!=='connected'&&!c.ready){c.mode='relay';c.ready=true;if(c.onReady)c.onReady();}},4000);
     }
     return c;
   }
@@ -478,6 +493,12 @@
       let c=pcs.get(from);
       if(data.sdp){
         if(!c)c=getConn(from,false);
+        else if(data.sdp.type==='offer'&&c.pc.signalingState==='have-local-offer'){
+          // Glare (both offered): designated dialer wins, the other stands down.
+          if(myId&&from&&myId<from)return;
+          try{c.dc?.close()}catch{}try{c.pc.close()}catch{}pcs.delete(from);
+          c=getConn(from,false);
+        }
         await c.pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
         if(data.sdp.type==='offer'){
           const ans=await c.pc.createAnswer();await c.pc.setLocalDescription(ans);
@@ -581,7 +602,9 @@
     toast(`Message sent → ${peer.name} ✓`,'ok');
   }
 
-  // relay sender (base64 chunks over WS)
+  // relay sender (base64 chunks over WS) — streams slice-by-slice with
+  // socket backpressure instead of a fixed per-chunk sleep, so throughput
+  // is limited by the network, not by an artificial delay.
   async function sendFileRelay(peer,file,id,ui){
     if(file.size>RELAY_MAX_BYTES){ui.fail('too big for relay (100MB max — use same-WiFi P2P)');toast('File too big for relay (100MB max)','err');return;}
     const header={kind:'file-header',id,name:file.name,size:file.size,mime:file.type||'application/octet-stream'};
@@ -590,19 +613,18 @@
     const accepted=new Promise((res,rej)=>{pendingAccept.set(id,{res,rej});setTimeout(()=>rej(new Error('declined/timeout')),90000);});
     try{await accepted;}catch{ui.fail('declined');pendingAccept.delete(id);return;}
     if(ui.cancelled)return;
-    const b64=await blobToB64(file);
-    if(ui.cancelled)return;
-    const STEP=48*1024;let seq=0;
-    for(let i=0;i<b64.length;i+=STEP){
+    const STEP_BIN=45*1024;let seq=0; // → ~60KB base64, under the 100KB chunk cap
+    for(let off=0;off<file.size;off+=STEP_BIN){
       if(ui.cancelled)return;
-      send({type:'relay',to:peer.id,data:{kind:'file-chunk',id,seq:seq++,chunk:b64.slice(i,i+STEP),last:i+STEP>=b64.length}});
-      ui.update(Math.min(file.size,Math.round((i+STEP)/b64.length*file.size)));
-      await new Promise(r=>setTimeout(r,10)); // avoid WS flood
+      const buf=await file.slice(off,off+STEP_BIN).arrayBuffer();
+      send({type:'relay',to:peer.id,data:{kind:'file-chunk',id,seq:seq++,chunk:b64encode(buf),last:off+STEP_BIN>=file.size}});
+      ui.update(Math.min(file.size,off+STEP_BIN));
+      while(ws&&ws.bufferedAmount>512*1024){await new Promise(r=>setTimeout(r,50));}
     }
     send({type:'relay',to:peer.id,data:{kind:'file-done',id}});
     ui.done(null);
   }
-  function blobToB64(blob){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(String(fr.result).split(',')[1]);fr.onerror=rej;fr.readAsDataURL(blob);});}
+  function b64encode(buf){const u=new Uint8Array(buf);let s='';for(let i=0;i<u.length;i+=0x8000){s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));}return btoa(s);}
   function b64ToBytes(b64){const bin=atob(b64);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u;}
 
   // ---------- receiving ----------
